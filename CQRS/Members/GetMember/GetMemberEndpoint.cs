@@ -16,7 +16,7 @@ public class GetMemberEndpoint(ApplicationDispatcher dispatcher) : IEndpoint<str
     public async Task<Results<Ok<MemberDTO>, NotFound>> Handle(string id, CancellationToken cancellationToken)
     {
         var query = new GetMemberQuery(id);
-        var member = await dispatcher.Dispatch<GetMemberQuery, MemberDTO>(query);
+        var member = await dispatcher.Dispatch(query);
         return TypedResults.Ok(member);
     }
 }

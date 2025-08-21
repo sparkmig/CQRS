@@ -5,10 +5,14 @@ namespace CQRS.Common.Handlers;
 
 public class ApplicationDispatcher(IServiceProvider provider)
 {
-    public Task<TResult> Dispatch<TQuery, TResult>(TQuery query, CancellationToken? cancellationToken = null) where TQuery : IQuery<TResult>
+    public Task<TResult> Dispatch<TResult>(IQuery<TResult> query, CancellationToken? cancellationToken = null)
     {
         cancellationToken ??= CancellationToken.None;
-        var service = provider.GetService(typeof(IQueryHandler<TQuery, TResult>));
+        
+        var queryType = query.GetType();
+        var handlerType = typeof(IQueryHandler<,>).MakeGenericType(queryType, typeof(TResult));
+        
+        var service = provider.GetService(handlerType);
         if (service == null)
         {
             throw new ArgumentException("Service not found");
